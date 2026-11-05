@@ -1,0 +1,40 @@
+# 버스 터미널 waypoint 설정
+# 좌표 기준: map 프레임
+#
+# 버스 배치 : x=5.0, yaw=π(서쪽 방향), 홈 간격 5.0 m
+#   1번 홈(빨강) y=-7.5 / 2번 홈(파랑) y=-2.5
+#   3번 홈(초록) y= 2.5 / 4번 홈(노랑) y= 7.5
+#
+# 로봇 도착 위치 : 버스 정면 앞 승강장
+#   x=1.5 (버스 정면 x=3.0 기준 1.5m 앞, 버스 구역 미진입)
+#   yaw_deg=0° → 동쪽(버스 방향) 정면
+waypoints:
+  red_bus_stop:
+    x: 1.5
+    y: -7.5
+    yaw_deg: 0.0
+    description: "1번 홈 - 빨간 버스 정면 앞"
+
+  blue_bus_stop:
+    x: 1.5
+    y: -2.5
+    yaw_deg: 0.0
+    description: "2번 홈 - 파란 버스 정면 앞"
+
+  green_bus_stop:
+    x: 1.5
+    y: 2.5
+    yaw_deg: 0.0
+    description: "3번 홈 - 초록 버스 정면 앞"
+
+  yellow_bus_stop:
+    x: 1.5
+    y: 7.5
+    yaw_deg: 0.0
+    description: "4번 홈 - 노란 버스 정면 앞"
+
+  home:
+    x: 0.0
+    y: 0.0
+    yaw_deg: 0.0
+    description: "로봇 초기 위치 (버스 정면을 마주봄)"

@@ -1,0 +1,279 @@
+<?xml version="1.0" ?>
+<!-- 시외버스 터미널 시뮬레이션 환경
+     좌표 레이아웃:
+       로봇 출발점  : (0, 0)  yaw=0 → +x(동쪽) 방향
+       버스 정면    : x = 3.0  (로봇과 마주보는 위치)
+       버스 중심    : x = 5.0,  yaw = π (정면이 서쪽, 로봇 방향)
+       홈 배치(y축) : 1번(빨강) y=-7.5  /  2번(파랑) y=-2.5
+                      3번(초록) y= 2.5  /  4번(노랑) y= 7.5
+       홈 간격      : 5.0 m (버스 폭 2.0 m + 여유 3.0 m)
+       도착지 원기둥: 각 버스 남쪽 바로 옆 (x=5.0, y=bus_y-2.0)
+       승강장 플랫폼: x ≈ 2.0-2.5, y 방향 20 m
+-->
+<sdf version="1.6">
+  <world name="bus_terminal_world">
+
+    <physics name="1ms" type="ignored">
+      <max_step_size>0.001</max_step_size>
+      <real_time_factor>1.0</real_time_factor>
+    </physics>
+
+    <plugin filename="ignition-gazebo-physics-system"
+            name="gz::sim::systems::Physics"/>
+    <plugin filename="ignition-gazebo-user-commands-system"
+            name="gz::sim::systems::UserCommands"/>
+    <plugin filename="ignition-gazebo-scene-broadcaster-system"
+            name="gz::sim::systems::SceneBroadcaster"/>
+    <plugin filename="ignition-gazebo-contact-system"
+            name="gz::sim::systems::Contact"/>
+    <plugin filename="ignition-gazebo-sensors-system"
+            name="gz::sim::systems::Sensors">
+      <render_engine>ogre</render_engine>
+    </plugin>
+
+    <!-- 조명 -->
+    <light type="directional" name="sun">
+      <cast_shadows>true</cast_shadows>
+      <pose>0 0 10 0 0 0</pose>
+      <diffuse>0.9 0.9 0.9 1</diffuse>
+      <specular>0.3 0.3 0.3 1</specular>
+      <attenuation>
+        <range>1000</range><constant>0.9</constant>
+        <linear>0.01</linear><quadratic>0.001</quadratic>
+      </attenuation>
+      <direction>-0.5 0.1 -0.9</direction>
+    </light>
+
+    <!-- 바닥 -->
+    <model name="ground_plane">
+      <static>true</static>
+      <link name="link">
+        <collision name="collision">
+          <geometry><plane><normal>0 0 1</normal><size>40 40</size></plane></geometry>
+        </collision>
+        <visual name="visual">
+          <geometry><plane><normal>0 0 1</normal><size>40 40</size></plane></geometry>
+          <material><ambient>0.7 0.7 0.7 1</ambient><diffuse>0.7 0.7 0.7 1</diffuse></material>
+        </visual>
+      </link>
+    </model>
+
+    <!-- ══════════════════════════════════════════════════════
+         승강장 구조물
+         플랫폼 슬래브: x=1.9~2.4 (깊이 0.5 m), y=-10~10 (20 m)
+         버스 정면(x=3.0)과 로봇 출발점(x=0) 사이에 위치
+    ══════════════════════════════════════════════════════ -->
+
+    <!-- 승강장 콘크리트 슬래브 -->
+    <model name="platform_slab">
+      <static>true</static>
+      <pose>2.15 0 0.1 0 0 0</pose>
+      <link name="link">
+        <collision name="col">
+          <geometry><box><size>0.5 20.0 0.2</size></box></geometry>
+        </collision>
+        <visual name="vis">
+          <geometry><box><size>0.5 20.0 0.2</size></box></geometry>
+          <material><ambient>0.78 0.78 0.78 1</ambient><diffuse>0.78 0.78 0.78 1</diffuse></material>
+        </visual>
+      </link>
+    </model>
+
+    <!-- 캐노피 지붕 (20 m) -->
+    <model name="platform_canopy">
+      <static>true</static>
+      <pose>2.2 0 2.5 0 0 0</pose>
+      <link name="link">
+        <collision name="col">
+          <geometry><box><size>0.7 20.0 0.08</size></box></geometry>
+        </collision>
+        <visual name="vis">
+          <geometry><box><size>0.7 20.0 0.08</size></box></geometry>
+          <material><ambient>0.35 0.45 0.6 1</ambient><diffuse>0.35 0.45 0.6 1</diffuse></material>
+        </visual>
+      </link>
+    </model>
+
+    <!-- 캐노피 지지 기둥 (홈 경계마다 배치) -->
+    <model name="col_south_end"><static>true</static>
+      <pose>2.2 -9.5 1.25 0 0 0</pose><link name="l">
+      <visual name="v"><geometry><cylinder><radius>0.07</radius><length>2.5</length></cylinder></geometry>
+      <material><ambient>0.3 0.3 0.3 1</ambient></material></visual></link></model>
+
+    <model name="col_bay12"><static>true</static>
+      <pose>2.2 -5.0 1.25 0 0 0</pose><link name="l">
+      <visual name="v"><geometry><cylinder><radius>0.07</radius><length>2.5</length></cylinder></geometry>
+      <material><ambient>0.3 0.3 0.3 1</ambient></material></visual></link></model>
+
+    <model name="col_bay23"><static>true</static>
+      <pose>2.2 0.0 1.25 0 0 0</pose><link name="l">
+      <visual name="v"><geometry><cylinder><radius>0.07</radius><length>2.5</length></cylinder></geometry>
+      <material><ambient>0.3 0.3 0.3 1</ambient></material></visual></link></model>
+
+    <model name="col_bay34"><static>true</static>
+      <pose>2.2 5.0 1.25 0 0 0</pose><link name="l">
+      <visual name="v"><geometry><cylinder><radius>0.07</radius><length>2.5</length></cylinder></geometry>
+      <material><ambient>0.3 0.3 0.3 1</ambient></material></visual></link></model>
+
+    <model name="col_north_end"><static>true</static>
+      <pose>2.2 9.5 1.25 0 0 0</pose><link name="l">
+      <visual name="v"><geometry><cylinder><radius>0.07</radius><length>2.5</length></cylinder></geometry>
+      <material><ambient>0.3 0.3 0.3 1</ambient></material></visual></link></model>
+
+    <!-- ══════════════════════════════════════════════════════
+         1번 홈 — 빨간 버스  (y = -7.5)
+         버스 중심: (5.0, -7.5, 0.75),  yaw = π (정면 서쪽 → 로봇 방향)
+         버스 정면 x = 3.0,  버스 후면 x = 7.0
+    ══════════════════════════════════════════════════════ -->
+    <model name="red_bus">
+      <static>true</static>
+      <pose>5.0 -7.5 0.75 0 0 3.14159</pose>
+      <link name="body">
+        <collision name="col"><geometry><box><size>4.0 2.0 1.5</size></box></geometry></collision>
+        <visual name="vis">
+          <geometry><box><size>4.0 2.0 1.5</size></box></geometry>
+          <material><ambient>0.85 0.1 0.1 1</ambient><diffuse>0.85 0.1 0.1 1</diffuse></material>
+        </visual>
+      </link>
+    </model>
+
+    <!-- 1번 홈 표지 기둥 -->
+    <model name="bay_post_1">
+      <static>true</static>
+      <pose>2.5 -7.5 0.75 0 0 0</pose>
+      <link name="post">
+        <collision name="col"><geometry><cylinder><radius>0.07</radius><length>1.5</length></cylinder></geometry></collision>
+        <visual name="vis">
+          <geometry><cylinder><radius>0.07</radius><length>1.5</length></cylinder></geometry>
+          <material><ambient>0.85 0.1 0.1 1</ambient></material>
+        </visual>
+      </link>
+    </model>
+    <model name="bay_sign_1">
+      <static>true</static>
+      <pose>2.5 -7.5 1.65 0 0 0</pose>
+      <link name="sign">
+        <collision name="col"><geometry><box><size>0.08 0.32 0.32</size></box></geometry></collision>
+        <visual name="vis">
+          <geometry><box><size>0.08 0.32 0.32</size></box></geometry>
+          <material><ambient>0.85 0.1 0.1 1</ambient><diffuse>0.85 0.1 0.1 1</diffuse></material>
+        </visual>
+      </link>
+    </model>
+
+    <!-- ══════════════════════════════════════════════════════
+         2번 홈 — 파란 버스  (y = -2.5)
+    ══════════════════════════════════════════════════════ -->
+    <model name="blue_bus">
+      <static>true</static>
+      <pose>5.0 -2.5 0.75 0 0 3.14159</pose>
+      <link name="body">
+        <collision name="col"><geometry><box><size>4.0 2.0 1.5</size></box></geometry></collision>
+        <visual name="vis">
+          <geometry><box><size>4.0 2.0 1.5</size></box></geometry>
+          <material><ambient>0.1 0.2 0.85 1</ambient><diffuse>0.1 0.2 0.85 1</diffuse></material>
+        </visual>
+      </link>
+    </model>
+
+    <model name="bay_post_2">
+      <static>true</static>
+      <pose>2.5 -2.5 0.75 0 0 0</pose>
+      <link name="post">
+        <collision name="col"><geometry><cylinder><radius>0.07</radius><length>1.5</length></cylinder></geometry></collision>
+        <visual name="vis">
+          <geometry><cylinder><radius>0.07</radius><length>1.5</length></cylinder></geometry>
+          <material><ambient>0.1 0.2 0.85 1</ambient></material>
+        </visual>
+      </link>
+    </model>
+    <model name="bay_sign_2">
+      <static>true</static>
+      <pose>2.5 -2.5 1.65 0 0 0</pose>
+      <link name="sign">
+        <collision name="col"><geometry><box><size>0.08 0.32 0.32</size></box></geometry></collision>
+        <visual name="vis">
+          <geometry><box><size>0.08 0.32 0.32</size></box></geometry>
+          <material><ambient>0.1 0.2 0.85 1</ambient><diffuse>0.1 0.2 0.85 1</diffuse></material>
+        </visual>
+      </link>
+    </model>
+
+    <!-- ══════════════════════════════════════════════════════
+         3번 홈 — 초록 버스  (y = 2.5)
+    ══════════════════════════════════════════════════════ -->
+    <model name="green_bus">
+      <static>true</static>
+      <pose>5.0 2.5 0.75 0 0 3.14159</pose>
+      <link name="body">
+        <collision name="col"><geometry><box><size>4.0 2.0 1.5</size></box></geometry></collision>
+        <visual name="vis">
+          <geometry><box><size>4.0 2.0 1.5</size></box></geometry>
+          <material><ambient>0.1 0.7 0.2 1</ambient><diffuse>0.1 0.7 0.2 1</diffuse></material>
+        </visual>
+      </link>
+    </model>
+
+    <model name="bay_post_3">
+      <static>true</static>
+      <pose>2.5 2.5 0.75 0 0 0</pose>
+      <link name="post">
+        <collision name="col"><geometry><cylinder><radius>0.07</radius><length>1.5</length></cylinder></geometry></collision>
+        <visual name="vis">
+          <geometry><cylinder><radius>0.07</radius><length>1.5</length></cylinder></geometry>
+          <material><ambient>0.1 0.7 0.2 1</ambient></material>
+        </visual>
+      </link>
+    </model>
+    <model name="bay_sign_3">
+      <static>true</static>
+      <pose>2.5 2.5 1.65 0 0 0</pose>
+      <link name="sign">
+        <collision name="col"><geometry><box><size>0.08 0.32 0.32</size></box></geometry></collision>
+        <visual name="vis">
+          <geometry><box><size>0.08 0.32 0.32</size></box></geometry>
+          <material><ambient>0.1 0.7 0.2 1</ambient><diffuse>0.1 0.7 0.2 1</diffuse></material>
+        </visual>
+      </link>
+    </model>
+
+    <!-- ══════════════════════════════════════════════════════
+         4번 홈 — 노란 버스  (y = 7.5)
+    ══════════════════════════════════════════════════════ -->
+    <model name="yellow_bus">
+      <static>true</static>
+      <pose>5.0 7.5 0.75 0 0 3.14159</pose>
+      <link name="body">
+        <collision name="col"><geometry><box><size>4.0 2.0 1.5</size></box></geometry></collision>
+        <visual name="vis">
+          <geometry><box><size>4.0 2.0 1.5</size></box></geometry>
+          <material><ambient>0.9 0.8 0.1 1</ambient><diffuse>0.9 0.8 0.1 1</diffuse></material>
+        </visual>
+      </link>
+    </model>
+
+    <model name="bay_post_4">
+      <static>true</static>
+      <pose>2.5 7.5 0.75 0 0 0</pose>
+      <link name="post">
+        <collision name="col"><geometry><cylinder><radius>0.07</radius><length>1.5</length></cylinder></geometry></collision>
+        <visual name="vis">
+          <geometry><cylinder><radius>0.07</radius><length>1.5</length></cylinder></geometry>
+          <material><ambient>0.9 0.8 0.1 1</ambient></material>
+        </visual>
+      </link>
+    </model>
+    <model name="bay_sign_4">
+      <static>true</static>
+      <pose>2.5 7.5 1.65 0 0 0</pose>
+      <link name="sign">
+        <collision name="col"><geometry><box><size>0.08 0.32 0.32</size></box></geometry></collision>
+        <visual name="vis">
+          <geometry><box><size>0.08 0.32 0.32</size></box></geometry>
+          <material><ambient>0.9 0.8 0.1 1</ambient><diffuse>0.9 0.8 0.1 1</diffuse></material>
+        </visual>
+      </link>
+    </model>
+
+  </world>
+</sdf>

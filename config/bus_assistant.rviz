@@ -1,0 +1,92 @@
+Panels:
+  - Class: rviz_common/Displays
+    Name: Displays
+  - Class: rviz_common/Views
+    Name: Views
+Visualization Manager:
+  Class: ""
+  Displays:
+    - Alpha: 0.7
+      Class: rviz_default_plugins/Map
+      Enabled: true
+      Name: Map
+      Topic:
+        Depth: 5
+        Durability Policy: Transient Local
+        History Policy: Keep Last
+        Reliability Policy: Reliable
+        Value: /map
+    - Alpha: 0.5
+      Cell Size: 1
+      Class: rviz_default_plugins/Grid
+      Color: 160; 160; 164
+      Enabled: true
+      Name: Grid
+    - Class: rviz_default_plugins/RobotModel
+      Enabled: true
+      Name: RobotModel
+      Topic:
+        Value: /robot_description
+    - Class: rviz_default_plugins/LaserScan
+      Enabled: true
+      Name: LaserScan
+      Topic:
+        Value: /scan
+      Color: 255; 0; 0
+      Style: Flat Squares
+      Size (m): 0.03
+      Max Color: 255; 0; 0
+    - Class: rviz_default_plugins/Image
+      Enabled: true
+      Name: CameraRaw
+      Topic:
+        Value: /camera/image_raw
+    - Class: rviz_default_plugins/Image
+      Enabled: true
+      Name: BusDetection
+      Topic:
+        Value: /bus_detection_image
+    - Class: rviz_default_plugins/Odometry
+      Enabled: true
+      Name: Odometry
+      Topic:
+        Value: /odom
+    - Class: rviz_default_plugins/Marker
+      Enabled: true
+      Name: GoalMarker
+      Topic:
+        Depth: 5
+        Durability Policy: Transient Local
+        History Policy: Keep Last
+        Reliability Policy: Reliable
+        Value: /goal_marker
+    - Class: rviz_default_plugins/MarkerArray
+      Enabled: true
+      Name: BusMarkers
+      Topic:
+        Depth: 5
+        Durability Policy: Transient Local
+        History Policy: Keep Last
+        Reliability Policy: Reliable
+        Value: /bus_markers
+    - Angle Tolerance: 0.1
+      Class: rviz_default_plugins/Path
+      Color: 0; 170; 0
+      Enabled: true
+      Name: GlobalPath
+      Topic:
+        Value: /plan
+  Global Options:
+    Background Color: 48; 48; 48
+    Fixed Frame: map
+  Tools:
+    - Class: rviz_default_plugins/Interact
+    - Class: rviz_default_plugins/MoveCamera
+    - Class: rviz_default_plugins/Select
+    - Class: nav2_rviz_plugins/GoalTool
+  Views:
+    Current:
+      Class: rviz_default_plugins/Orbit
+      Distance: 8
+      Pitch: 0.9
+      Target Frame: base_link

@@ -1,0 +1,266 @@
+<?xml version="1.0"?>
+<!-- 버스 승하차 보조 로봇 — 차동구동 + LiDAR + 전방 카메라 -->
+<robot name="bus_assistant_robot">
+
+  <!-- ───── Links ───── -->
+
+  <link name="base_link">
+    <visual>
+      <geometry><box size="0.35 0.25 0.12"/></geometry>
+      <material name="white"><color rgba="0.95 0.95 0.95 1"/></material>
+    </visual>
+    <collision>
+      <geometry><box size="0.35 0.25 0.12"/></geometry>
+    </collision>
+    <inertial>
+      <mass value="5.0"/>
+      <inertia ixx="0.026" ixy="0" ixz="0"
+                           iyy="0.054" iyz="0"
+                                       izz="0.068"/>
+    </inertial>
+  </link>
+
+  <!-- 전면 디스플레이 패널 (시각화용) -->
+  <link name="display_panel">
+    <visual>
+      <geometry><box size="0.02 0.22 0.18"/></geometry>
+      <material name="blue"><color rgba="0.1 0.3 0.8 1"/></material>
+    </visual>
+    <collision>
+      <geometry><box size="0.02 0.22 0.18"/></geometry>
+    </collision>
+    <inertial>
+      <mass value="0.3"/>
+      <inertia ixx="0.002" ixy="0" ixz="0"
+                           iyy="0.001" iyz="0"
+                                       izz="0.002"/>
+    </inertial>
+  </link>
+
+  <link name="left_wheel">
+    <visual>
+      <geometry><cylinder length="0.05" radius="0.07"/></geometry>
+      <origin rpy="1.5708 0 0" xyz="0 0 0"/>
+      <material name="black"><color rgba="0.1 0.1 0.1 1"/></material>
+    </visual>
+    <collision>
+      <geometry><cylinder length="0.05" radius="0.07"/></geometry>
+      <origin rpy="1.5708 0 0" xyz="0 0 0"/>
+    </collision>
+    <inertial>
+      <mass value="0.5"/>
+      <inertia ixx="0.000613" ixy="0" ixz="0"
+                              iyy="0.001225" iyz="0"
+                                             izz="0.000613"/>
+    </inertial>
+  </link>
+
+  <link name="right_wheel">
+    <visual>
+      <geometry><cylinder length="0.05" radius="0.07"/></geometry>
+      <origin rpy="1.5708 0 0" xyz="0 0 0"/>
+      <material name="black"><color rgba="0.1 0.1 0.1 1"/></material>
+    </visual>
+    <collision>
+      <geometry><cylinder length="0.05" radius="0.07"/></geometry>
+      <origin rpy="1.5708 0 0" xyz="0 0 0"/>
+    </collision>
+    <inertial>
+      <mass value="0.5"/>
+      <inertia ixx="0.000613" ixy="0" ixz="0"
+                              iyy="0.001225" iyz="0"
+                                             izz="0.000613"/>
+    </inertial>
+  </link>
+
+  <link name="caster_wheel">
+    <visual>
+      <geometry><sphere radius="0.035"/></geometry>
+      <material name="gray"><color rgba="0.6 0.6 0.6 1"/></material>
+    </visual>
+    <collision>
+      <geometry><sphere radius="0.035"/></geometry>
+    </collision>
+    <inertial>
+      <mass value="0.1"/>
+      <inertia ixx="0.000049" ixy="0" ixz="0"
+                              iyy="0.000049" iyz="0"
+                                             izz="0.000049"/>
+    </inertial>
+  </link>
+
+  <!-- LiDAR 링크 -->
+  <link name="laser_frame">
+    <visual>
+      <geometry><cylinder length="0.04" radius="0.05"/></geometry>
+      <material name="red"><color rgba="0.8 0.1 0.1 1"/></material>
+    </visual>
+    <collision>
+      <geometry><cylinder length="0.04" radius="0.05"/></geometry>
+    </collision>
+    <inertial>
+      <mass value="0.1"/>
+      <inertia ixx="0.000076" ixy="0" ixz="0"
+                              iyy="0.000076" iyz="0"
+                                             izz="0.000125"/>
+    </inertial>
+  </link>
+
+  <!-- 전방 카메라 링크 -->
+  <link name="camera_frame">
+    <visual>
+      <geometry><box size="0.04 0.06 0.04"/></geometry>
+      <material name="dark"><color rgba="0.2 0.2 0.2 1"/></material>
+    </visual>
+    <collision>
+      <geometry><box size="0.04 0.06 0.04"/></geometry>
+    </collision>
+    <inertial>
+      <mass value="0.05"/>
+      <inertia ixx="0.000001" ixy="0" ixz="0"
+                              iyy="0.000001" iyz="0"
+                                             izz="0.000001"/>
+    </inertial>
+  </link>
+
+  <!-- ───── Joints ───── -->
+
+  <joint name="display_panel_joint" type="fixed">
+    <parent link="base_link"/>
+    <child  link="display_panel"/>
+    <origin xyz="0.185 0 0.09" rpy="0 0 0"/>
+  </joint>
+
+  <joint name="left_wheel_joint" type="continuous">
+    <parent link="base_link"/>
+    <child  link="left_wheel"/>
+    <origin xyz="0.0 0.145 -0.06" rpy="0 0 0"/>
+    <axis   xyz="0 1 0"/>
+    <limit  effort="15" velocity="10"/>
+    <dynamics damping="0.1" friction="0.0"/>
+  </joint>
+
+  <joint name="right_wheel_joint" type="continuous">
+    <parent link="base_link"/>
+    <child  link="right_wheel"/>
+    <origin xyz="0.0 -0.145 -0.06" rpy="0 0 0"/>
+    <axis   xyz="0 1 0"/>
+    <limit  effort="15" velocity="10"/>
+    <dynamics damping="0.1" friction="0.0"/>
+  </joint>
+
+  <joint name="caster_wheel_joint" type="fixed">
+    <parent link="base_link"/>
+    <child  link="caster_wheel"/>
+    <origin xyz="-0.13 0 -0.095" rpy="0 0 0"/>
+  </joint>
+
+  <joint name="laser_joint" type="fixed">
+    <parent link="base_link"/>
+    <child  link="laser_frame"/>
+    <origin xyz="0.12 0 0.1" rpy="0 0 0"/>
+  </joint>
+
+  <joint name="camera_joint" type="fixed">
+    <parent link="base_link"/>
+    <child  link="camera_frame"/>
+    <!-- 전면 상단, 약간 하향 틸트 -->
+    <origin xyz="0.18 0 0.14" rpy="0 0.2 0"/>
+  </joint>
+
+  <!-- ───── Gazebo Plugins ───── -->
+
+  <!-- 고마찰 구동 바퀴 -->
+  <gazebo reference="left_wheel">
+    <collision>
+      <surface><friction><ode><mu>1.0</mu><mu2>1.0</mu2></ode></friction></surface>
+    </collision>
+  </gazebo>
+
+  <gazebo reference="right_wheel">
+    <collision>
+      <surface><friction><ode><mu>1.0</mu><mu2>1.0</mu2></ode></friction></surface>
+    </collision>
+  </gazebo>
+
+  <!-- 무마찰 캐스터 -->
+  <gazebo reference="caster_wheel">
+    <collision>
+      <surface><friction><ode><mu>0</mu><mu2>0</mu2></ode></friction></surface>
+    </collision>
+  </gazebo>
+
+  <!-- 차동구동 -->
+  <gazebo>
+    <plugin filename="gz-sim-diff-drive-system"
+            name="gz::sim::systems::DiffDrive">
+      <left_joint>left_wheel_joint</left_joint>
+      <right_joint>right_wheel_joint</right_joint>
+      <wheel_separation>0.29</wheel_separation>
+      <wheel_radius>0.07</wheel_radius>
+      <odom_publish_frequency>10</odom_publish_frequency>
+      <topic>cmd_vel</topic>
+      <odom_topic>odom</odom_topic>
+      <tf_topic>/tf</tf_topic>
+      <frame_id>odom</frame_id>
+      <child_frame_id>base_link</child_frame_id>
+      <max_linear_acceleration>1.0</max_linear_acceleration>
+    </plugin>
+  </gazebo>
+
+  <gazebo>
+    <plugin filename="gz-sim-joint-state-publisher-system"
+            name="gz::sim::systems::JointStatePublisher"/>
+  </gazebo>
+
+  <!-- LiDAR -->
+  <gazebo reference="laser_frame">
+    <sensor name="laser" type="gpu_lidar">
+      <gz_frame_id>laser_frame</gz_frame_id>
+      <pose>0 0 0 0 0 0</pose>
+      <topic>scan</topic>
+      <update_rate>10</update_rate>
+      <lidar>
+        <scan>
+          <horizontal>
+            <samples>360</samples>
+            <resolution>1</resolution>
+            <min_angle>-3.14159</min_angle>
+            <max_angle>3.14159</max_angle>
+          </horizontal>
+        </scan>
+        <range>
+          <min>0.1</min>
+          <max>12.0</max>
+          <resolution>0.01</resolution>
+        </range>
+      </lidar>
+      <always_on>1</always_on>
+      <visualize>true</visualize>
+    </sensor>
+  </gazebo>
+
+  <!-- 전방 카메라 -->
+  <gazebo reference="camera_frame">
+    <sensor name="camera" type="camera">
+      <gz_frame_id>camera_frame</gz_frame_id>
+      <topic>camera/image_raw</topic>
+      <update_rate>15</update_rate>
+      <camera>
+        <horizontal_fov>1.047</horizontal_fov>
+        <image>
+          <width>640</width>
+          <height>480</height>
+          <format>R8G8B8</format>
+        </image>
+        <clip>
+          <near>0.05</near>
+          <far>20.0</far>
+        </clip>
+      </camera>
+      <always_on>1</always_on>
+      <visualize>false</visualize>
+    </sensor>
+  </gazebo>
+
+</robot>
